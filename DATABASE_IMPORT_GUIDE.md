@@ -49,3 +49,9 @@ Nunca coloque a credencial de serviço dentro do repositório, do ZIP ou do fron
 A futura API deverá utilizar somente registros clínicos com `reviewStatus = published` para respostas médicas factuais. Registros `pending` servem para catálogo/busca até serem revisados.
 
 A resposta da IA deve sempre deixar claro que ela é uma ferramenta informativa, não substitui médico, farmacêutico ou outro profissional habilitado, e não deve ser usada para diagnosticar, prescrever, interromper ou alterar tratamento por conta própria.
+
+## Importação retomável após limite de quota
+
+O importador usa IDs determinísticos e, no modo `import`, primeiro lista os documentos que já existem em `medications`. Na primeira carga, ele grava apenas os documentos ausentes. Se uma execução for interrompida por quota, timeout ou outro erro depois de alguns lotes, basta executar `import` novamente após a quota ser renovada; os documentos já gravados serão pulados e somente os restantes serão enviados.
+
+Isso evita regravar os primeiros lotes e é especialmente importante no plano gratuito, que possui limite diário de gravações.

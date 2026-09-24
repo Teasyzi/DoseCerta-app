@@ -142,24 +142,65 @@ if (dryRun) {
 
 const app = initializeApp({ credential: cert(credentials()) });
 const db = getFirestore(app);
-let batch = db.batch();
-let count = 0;
+const collection = db.collection('medications');
 
+// Importação inicial/resumível: nunca reescreve documentos que já existem.
+// Isso permite executar novamente após uma interrupção ou após o limite diário
+// do plano gratuito, gravando somente o que ainda falta.
+console.log('Verificando documentos já existentes em medications...');
+const existingRefs = await collection.listDocuments();
+const existingIds = new Set(existingRefs.map(ref => ref.id));
+console.log(`Documentos já existentes: ${existingIds.size}`);
+
+const pending = [];
 for (const record of unique) {
   const id = `${safeIdPart(record.name) || 'medicamento'}-${safeIdPart(record.regulatory?.registration || 'sem-registro') || 'sem-registro'}`.slice(0, 100);
-  const ref = db.collection('medications').doc(id);
-  batch.set(ref, {
+  if (existingIds.has(id)) continue;
+  pending.push({ id, record });
+}
+
+console.log(`Documentos que ainda faltam: ${pending.length}`);
+if (!pending.length) {
+  console.log('Importação já está completa. Nenhum documento novo precisa ser gravado.');
+  process.exit(0);
+}
+
+let batch = db.batch();
+let written = 0;
+const BATCH_SIZE = 250;
+
+for (const { id, record } of pending) {
+  const ref = collection.doc(id);
+  batch.create(ref, {
     ...record,
     importedAt: FieldValue.serverTimestamp()
-  }, { merge: true });
-  count++;
+  });
+  written++;
 
-  if (count % 400 === 0) {
-    await batch.commit();
-    console.log(`Lote gravado: ${count}`);
+  if (written % BATCH_SIZE === 0) {
+    try {
+      await batch.commit();
+      console.log(`Lote gravado: ${written}/${pending.length}`);
+    } catch (error) {
+      if (error?.code === 8 || /RESOURCE_EXHAUSTED|quota exceeded/i.test(error?.message || '')) {
+        console.error('Quota do Firestore atingida. Os lotes anteriores permanecem gravados. Execute o workflow novamente após a renovação da quota; ele pulará os documentos já existentes.');
+      }
+      throw error;
+    }
     batch = db.batch();
   }
 }
 
-if (count % 400) await batch.commit();
-console.log(`Importação concluída: ${count} documentos em medications.`);
+if (written % BATCH_SIZE) {
+  try {
+    await batch.commit();
+    console.log(`Lote final gravado: ${written}/${pending.length}`);
+  } catch (error) {
+    if (error?.code === 8 || /RESOURCE_EXHAUSTED|quota exceeded/i.test(error?.message || '')) {
+      console.error('Quota do Firestore atingida. Os lotes anteriores permanecem gravados. Execute o workflow novamente após a renovação da quota; ele pulará os documentos já existentes.');
+    }
+    throw error;
+  }
+}
+
+console.log(`Importação concluída: ${written} novos documentos em medications.`);

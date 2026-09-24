@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'Validação ou gravação no Firestore'
+        description: 'Validação ou gravação no Firestore (a importação é retomável)'
         required: true
         default: 'dry-run'
         type: choice

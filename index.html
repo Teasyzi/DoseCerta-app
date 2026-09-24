@@ -3,19 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#0f172a">
-  <meta name="description" content="DoseCerta — organização simples e acessível de medicamentos e horários.">
+  <meta name="theme-color" content="#111827">
+  <meta name="description" content="DoseCerta — organize seus medicamentos e horários de forma simples.">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg">
-<link rel="stylesheet" href="./src/style.css">  
+  <link rel="stylesheet" href="./src/style.css">
   <title>DoseCerta</title>
 </head>
 <body>
   <section id="loginPanel" class="login-screen">
     <div class="login-card">
+      <div class="brand-mark">💊</div>
       <p class="eyebrow">DOSECERTA</p>
-      <h1>Seus medicamentos, de um jeito simples.</h1>
-      <p>Entre com sua conta Google para manter sua rotina sincronizada e protegida.</p>
+      <h1>Seu tratamento organizado. Sua cabeça mais tranquila.</h1>
+      <p>Cadastre seus medicamentos, horários e lembretes em poucos passos.</p>
       <button id="googleLoginButton" class="primary large">Continuar com Google</button>
       <p id="loginStatus" class="helper" aria-live="polite"></p>
       <p class="notice">O DoseCerta organiza informações e horários. Ele não substitui orientação de um profissional de saúde.</p>
@@ -23,110 +24,115 @@
   </section>
 
   <div id="userBar" class="user-bar hidden">
-    <div class="user-info">
-      <img id="userPhoto" src="/icon.svg" alt="" class="user-photo">
-      <span id="userName"></span>
-    </div>
-    <button id="logoutButton" class="secondary">Sair</button>
+    <div class="user-info"><img id="userPhoto" src="./icon.svg" alt="" class="user-photo"><span id="userName"></span></div>
+    <button id="logoutButton" class="ghost">Sair</button>
   </div>
+
   <div id="appContent" class="hidden">
-  <header class="topbar">
-    <div>
-      <p class="eyebrow">DOSECERTA</p>
-      <h1>Seus medicamentos, de um jeito simples.</h1>
-    </div>
-    <button id="installButton" class="secondary hidden">Instalar</button>
-  </header>
-
-  <main class="container">
-    <section class="today-card" aria-labelledby="todayTitle">
-      <div>
-        <span class="section-label">Hoje</span>
-        <h2 id="todayTitle">Sua rotina de medicamentos</h2>
-        <p id="todaySummary">Nenhum medicamento cadastrado ainda.</p>
-      </div>
-      <button id="addMedicationButton" class="primary large">+ Adicionar medicamento</button>
-    </section>
-
-    <section class="grid">
-      <article class="panel">
-        <div class="panel-heading">
-          <div>
-            <span class="section-label">Próximos horários</span>
-            <h2>O que vem agora</h2>
-          </div>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div>
+          <p class="eyebrow">DOSECERTA</p>
+          <h1>Vamos cuidar da sua rotina 💙</h1>
+          <p class="topbar-sub">Tudo que você precisa lembrar, em um só lugar.</p>
         </div>
+        <div class="header-badge"><span id="todayCount">0</span><small>meds</small></div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section id="nextMedication" class="next-card" aria-live="polite">
+        <span class="next-empty-icon">💊</span>
+        <div><span class="section-label">Seu próximo passo</span><h2>Adicione seu primeiro medicamento</h2><p>Leva menos de um minuto.</p></div>
+      </section>
+
+      <section class="today-card">
+        <div class="today-copy">
+          <div class="eyebrow dark">HOJE</div>
+          <h2>Minha rotina</h2>
+          <p id="todaySummary">Sua rotina ainda está vazia.</p>
+        </div>
+        <button id="addMedicationButton" class="primary large">＋ Adicionar medicamento</button>
+      </section>
+
+      <section class="section-block">
+        <div class="section-heading"><div><span class="section-label">Sua rotina</span><h2>Horários de hoje</h2></div><span class="soft-pill">Lembretes</span></div>
         <div id="scheduleList" class="schedule-list">
-          <div class="empty-state">
-            <strong>Vamos começar.</strong>
-            <p>Cadastre seu primeiro medicamento para montar sua rotina.</p>
-          </div>
+          <div class="empty-state"><div class="empty-icon">✨</div><strong>Vamos montar sua rotina.</strong><p>Comece pelo medicamento que você mais precisa lembrar hoje.</p></div>
         </div>
-      </article>
+      </section>
 
-      <article class="panel">
-        <div class="panel-heading">
-          <div>
-            <span class="section-label">Assistente</span>
-            <h2>Tenho uma dúvida</h2>
+      <section class="assistant-card">
+        <div class="assistant-icon">✦</div>
+        <div class="assistant-content">
+          <span class="section-label">Assistente</span>
+          <h2>Tem uma dúvida sobre sua rotina?</h2>
+          <p>Por enquanto consulto seus horários. A IA clínica entra quando nossa base de informações estiver pronta.</p>
+          <div class="quick-questions">
+            <button type="button" class="quick-chip" data-question="Quais medicamentos tenho hoje?">📋 Meus medicamentos</button>
+            <button type="button" class="quick-chip" data-question="Qual é meu próximo horário?">⏰ Próximo horário</button>
           </div>
+          <textarea id="questionInput" rows="3" placeholder="Digite uma pergunta…"></textarea>
+          <button id="askButton" class="primary">Perguntar</button>
+          <div id="assistantAnswer" class="answer" aria-live="polite">Escolha uma sugestão ou faça uma pergunta sobre sua rotina.</div>
         </div>
-        <p class="helper">Faça perguntas sobre as informações cadastradas no aplicativo. A V1 responde usando a base do app e mostra quando uma informação precisa ser confirmada.</p>
-        <textarea id="questionInput" rows="4" placeholder="Ex.: quais medicamentos tenho hoje?"></textarea>
-        <button id="askButton" class="primary">Perguntar</button>
-        <div id="assistantAnswer" class="answer" aria-live="polite"></div>
-      </article>
-    </section>
+      </section>
 
-    <section class="panel accessibility">
-      <div>
-        <span class="section-label">Acessibilidade</span>
-        <h2>Deixe o app mais confortável</h2>
-        <p>O tamanho do texto pode ser aumentado sem quebrar a tela.</p>
-      </div>
-      <div class="accessibility-actions">
-        <button id="fontDown" class="secondary">A−</button>
-        <button id="fontUp" class="secondary">A+</button>
-        <button id="contrastToggle" class="secondary">Alto contraste</button>
-      </div>
-    </section>
-  </main>
+      <details class="accessibility">
+        <summary>Acessibilidade e conforto</summary>
+        <div class="accessibility-actions">
+          <button id="fontDown" class="secondary">A− Texto</button>
+          <button id="fontUp" class="secondary">A+ Texto</button>
+          <button id="contrastToggle" class="secondary">Alto contraste</button>
+        </div>
+      </details>
+    </main>
+  </div>
 
   <dialog id="medicationDialog">
     <form method="dialog" id="medicationForm" class="dialog-form">
       <button type="button" id="closeDialog" class="close" aria-label="Fechar">×</button>
-      <span class="section-label">Novo medicamento</span>
-      <h2>Vamos cadastrar</h2>
+      <div class="dialog-progress"><span class="active">1</span><i></i><span>2</span><i></i><span>3</span></div>
+      <span class="section-label">PASSO 1 DE 3</span>
+      <h2>Vamos adicionar um medicamento</h2>
+      <p class="dialog-intro">Comece digitando o nome. O DoseCerta procura no catálogo para evitar que você precise digitar tudo.</p>
 
-      <label>Nome do medicamento
-        <input id="medName" required autocomplete="off" placeholder="Ex.: Medicamento">
-      </label>
+      <div class="medication-search">
+        <label for="medName">Qual medicamento?</label>
+        <input id="medName" required autocomplete="off" placeholder="Ex.: dipirona, losartana…" inputmode="text">
+        <input id="medicationId" type="hidden">
+        <div id="medicationSuggestions" class="suggestions hidden" role="listbox"></div>
+      </div>
 
-      <label>Como devo tomar?
-        <input id="medDose" required placeholder="Ex.: 1 comprimido">
-      </label>
+      <div id="selectedMedication" class="selected-medication hidden">
+        <div class="selected-check">✓</div><div><strong id="selectedMedicationName"></strong><span id="selectedMedicationMeta"></span></div>
+      </div>
 
-      <label>Horário
-        <input id="medTime" type="time" required>
-      </label>
+      <div class="form-grid">
+        <label>Como devo tomar?
+          <input id="medDose" required placeholder="Ex.: 1 comprimido" autocomplete="off">
+        </label>
+        <label>Qual horário?
+          <input id="medTime" type="time" required>
+        </label>
+        <label>Começa em
+          <input id="medStart" type="date" required>
+        </label>
+        <label>Termina em <span class="optional">(se souber)</span>
+          <input id="medEnd" type="date">
+        </label>
+      </div>
 
-      <label>Data de início
-        <input id="medStart" type="date" required>
-      </label>
-
-      <label>Data de término <span class="optional">(opcional)</span>
-        <input id="medEnd" type="date">
-      </label>
-
-      <p class="notice">O aplicativo organiza os horários. Ele não deve iniciar, parar ou alterar um tratamento prescrito por um profissional.</p>
+      <div class="dialog-tip"><span>💡</span><div><strong>Uma coisa de cada vez.</strong><p>Depois de salvar, você poderá adicionar os outros medicamentos da sua rotina.</p></div></div>
+      <p class="notice">O aplicativo organiza os horários. Não inicie, pare ou altere um tratamento por conta própria.</p>
 
       <div class="dialog-actions">
         <button type="button" id="cancelDialog" class="secondary">Cancelar</button>
-        <button class="primary" type="submit">Salvar medicamento</button>
+        <button class="primary" type="submit">Salvar e continuar</button>
       </div>
     </form>
   </dialog>
 
-  <script type="module" src="./src/main.js"></script>\n  </div>
+  <script type="module" src="./src/main.js"></script>
 </body>
 </html>

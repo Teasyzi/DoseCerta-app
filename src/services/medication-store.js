@@ -1,6 +1,6 @@
 import {
   collection, addDoc, doc, updateDoc, query, getDocs,
-  serverTimestamp, orderBy, setDoc
+  serverTimestamp, orderBy, setDoc, where, limit
 } from 'firebase/firestore';
 import { firebaseDb, firebaseAuth } from './firebase.js';
 
@@ -31,6 +31,31 @@ export const medicationStore = {
     return snapshot.docs
       .map(d => ({ id:d.id, ...d.data() }))
       .filter(m => m.status === 'active');
+  },
+
+
+  async searchCatalog(term){
+    requireUser();
+    const normalized = String(term || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if(normalized.length < 2) return [];
+
+    const end = normalized + '\uf8ff';
+    const snapshot = await getDocs(query(
+      collection(firebaseDb, 'medications'),
+      where('normalizedName', '>=', normalized),
+      where('normalizedName', '<=', end),
+      orderBy('normalizedName', 'asc'),
+      limit(8)
+    ));
+
+    return snapshot.docs.map(d => ({ id:d.id, ...d.data() }));
   },
 
   async add(data){

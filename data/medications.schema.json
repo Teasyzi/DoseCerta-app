@@ -1,6 +1,7 @@
 {
   "name": "DoseCerta medication record",
-  "version": 1,
+  "version": 2,
+  "description": "Catálogo regulatório + estrutura para conhecimento clínico revisado. Registros importados da Anvisa entram como pending e não devem ser usados pela IA como conteúdo clínico publicado.",
   "fields": {
     "name": "string",
     "normalizedName": "string",
@@ -9,6 +10,11 @@
     "aliases": "string[]",
     "activeIngredients": "string[]",
     "presentations": "object[]",
+    "regulatory": {
+      "registration": "string|null",
+      "company": "string|null",
+      "status": "string|null"
+    },
     "indications": "string[]",
     "howItWorks": "string|null",
     "contraindications": "string[]",
@@ -21,9 +27,11 @@
     "administration": "object|null",
     "description": "string|null",
     "sources": "object[]",
+    "searchTerms": "string[]",
     "reviewStatus": "pending|reviewed|published|outdated",
     "lastReviewedAt": "timestamp|null",
     "sourceUpdatedAt": "timestamp|null",
-    "sourceType": "anvisa|other"
+    "sourceType": "anvisa|other",
+    "importedAt": "timestamp"
   }
 }

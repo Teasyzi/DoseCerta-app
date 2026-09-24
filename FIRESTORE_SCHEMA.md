@@ -5,8 +5,12 @@ A V1 deve separar dados clínicos de dados pessoais.
 ## `medications`
 Catálogo clínico revisado.
 - `genericName`
+- `name` (opcional, para compatibilidade com registros antigos)
+- `normalizedName` (nome normalizado, sem acentos e em minúsculas, usado na busca)
 - `brandNames[]`
+- `searchTerms[]` (opcional, para futuras buscas por marca/princípio ativo)
 - `activeIngredients[]`
+- `aliases[]` (nomes alternativos usados na busca)
 - `form`
 - `strengths[]`
 - `indications[]`
@@ -17,6 +21,10 @@ Catálogo clínico revisado.
 - `foodInteractions[]`
 - `sources[]`
 - `lastReviewedAt`
+
+### Busca do catálogo
+
+A aplicação usa `normalizedName` para autocomplete por prefixo. O usuário precisa estar autenticado para consultar o catálogo. O cliente nunca recebe permissão de escrita em `medications`.
 
 ## `interactionRules`
 Regras estruturadas.

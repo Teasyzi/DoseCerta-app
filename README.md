@@ -28,3 +28,11 @@ A arquitetura usa Capacitor como camada futura:
 
 ## Importante
 O banco clínico real deve ser preenchido posteriormente com dados revisados e fontes confiáveis. Os arquivos desta V1 não inventam recomendações médicas.
+
+
+## Catálogo de medicamentos
+
+A busca do cadastro usa a coleção `medications` do Firestore e o campo `normalizedName`.
+O arquivo `MEDICATION_CATALOG_STARTER.json` é apenas um ponto de partida para estruturar a importação; os registros estão marcados como `needsReview` e não devem ser tratados como conteúdo clínico final.
+
+Para o conteúdo clínico, a referência de origem deve ser validada com fontes oficiais, especialmente o Bulário Eletrônico e o sistema de consulta de medicamentos da Anvisa.

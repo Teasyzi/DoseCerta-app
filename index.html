@@ -99,7 +99,12 @@
       <h2>Vamos cadastrar</h2>
 
       <label>Nome do medicamento
-        <input id="medName" required autocomplete="off" placeholder="Ex.: Medicamento">
+        <div class="medication-autocomplete">
+          <input id="medName" required autocomplete="off" placeholder="Digite o nome do medicamento" aria-autocomplete="list" aria-controls="medicationSuggestions">
+          <input id="medicationId" type="hidden" value="">
+          <div id="medicationSuggestions" class="suggestions hidden" role="listbox" aria-label="Sugestões de medicamentos"></div>
+        </div>
+        <span id="medicationHint" class="field-hint">Digite pelo menos 2 letras para procurar no catálogo.</span>
       </label>
 
       <label>Como devo tomar?

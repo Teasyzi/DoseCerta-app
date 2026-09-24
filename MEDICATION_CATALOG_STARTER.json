@@ -1,0 +1,262 @@
+[
+  {
+    "id": "paracetamol",
+    "genericName": "Paracetamol",
+    "normalizedName": "paracetamol",
+    "brandNames": [],
+    "activeIngredients": [
+      "Paracetamol"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "dipirona",
+    "genericName": "Dipirona",
+    "normalizedName": "dipirona",
+    "brandNames": [],
+    "activeIngredients": [
+      "Dipirona"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "ibuprofeno",
+    "genericName": "Ibuprofeno",
+    "normalizedName": "ibuprofeno",
+    "brandNames": [],
+    "activeIngredients": [
+      "Ibuprofeno"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "omeprazol",
+    "genericName": "Omeprazol",
+    "normalizedName": "omeprazol",
+    "brandNames": [],
+    "activeIngredients": [
+      "Omeprazol"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "amoxicilina",
+    "genericName": "Amoxicilina",
+    "normalizedName": "amoxicilina",
+    "brandNames": [],
+    "activeIngredients": [
+      "Amoxicilina"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "azitromicina",
+    "genericName": "Azitromicina",
+    "normalizedName": "azitromicina",
+    "brandNames": [],
+    "activeIngredients": [
+      "Azitromicina"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "losartana",
+    "genericName": "Losartana",
+    "normalizedName": "losartana",
+    "brandNames": [],
+    "activeIngredients": [
+      "Losartana"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "metformina",
+    "genericName": "Metformina",
+    "normalizedName": "metformina",
+    "brandNames": [],
+    "activeIngredients": [
+      "Metformina"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "loratadina",
+    "genericName": "Loratadina",
+    "normalizedName": "loratadina",
+    "brandNames": [],
+    "activeIngredients": [
+      "Loratadina"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "cetirizina",
+    "genericName": "Cetirizina",
+    "normalizedName": "cetirizina",
+    "brandNames": [],
+    "activeIngredients": [
+      "Cetirizina"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "atenolol",
+    "genericName": "Atenolol",
+    "normalizedName": "atenolol",
+    "brandNames": [],
+    "activeIngredients": [
+      "Atenolol"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "sinvastatina",
+    "genericName": "Sinvastatina",
+    "normalizedName": "sinvastatina",
+    "brandNames": [],
+    "activeIngredients": [
+      "Sinvastatina"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "enalapril",
+    "genericName": "Enalapril",
+    "normalizedName": "enalapril",
+    "brandNames": [],
+    "activeIngredients": [
+      "Enalapril"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "aas",
+    "genericName": "AAS",
+    "normalizedName": "aas",
+    "brandNames": [],
+    "activeIngredients": [
+      "AAS"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "prednisona",
+    "genericName": "Prednisona",
+    "normalizedName": "prednisona",
+    "brandNames": [],
+    "activeIngredients": [
+      "Prednisona"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "levotiroxina",
+    "genericName": "Levotiroxina",
+    "normalizedName": "levotiroxina",
+    "brandNames": [],
+    "activeIngredients": [
+      "Levotiroxina"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "fluconazol",
+    "genericName": "Fluconazol",
+    "normalizedName": "fluconazol",
+    "brandNames": [],
+    "activeIngredients": [
+      "Fluconazol"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "nimesulida",
+    "genericName": "Nimesulida",
+    "normalizedName": "nimesulida",
+    "brandNames": [],
+    "activeIngredients": [
+      "Nimesulida"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "diclofenaco",
+    "genericName": "Diclofenaco",
+    "normalizedName": "diclofenaco",
+    "brandNames": [],
+    "activeIngredients": [
+      "Diclofenaco"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  },
+  {
+    "id": "pantoprazol",
+    "genericName": "Pantoprazol",
+    "normalizedName": "pantoprazol",
+    "brandNames": [],
+    "activeIngredients": [
+      "Pantoprazol"
+    ],
+    "status": "needsReview",
+    "sources": [
+      "Anvisa / Bulário Eletrônico — validar e complementar antes de publicação"
+    ]
+  }
+]

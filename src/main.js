@@ -3,10 +3,14 @@ import { firebaseAuth, googleProvider } from './services/firebase.js';
 import { medicationStore } from './services/medication-store.js';
 import { notificationService } from './services/notification-service.js';
 import { assistant } from './services/assistant.js';
+import { medicationCatalog } from './services/medication-catalog.js';
 
 const $ = (id) => document.getElementById(id);
 const dialog = $('medicationDialog');
 const form = $('medicationForm');
+let selectedMedication = null;
+let searchTimer = null;
+
 
 function todayISO(){
   const d = new Date();
@@ -30,7 +34,7 @@ function setLoggedIn(user){
   $('appContent').classList.remove('hidden');
   $('userBar').classList.remove('hidden');
   $('userName').textContent = user.displayName || user.email || 'Usuário';
-  $('userPhoto').src = user.photoURL || '/icon.svg';
+  $('userPhoto').src = user.photoURL || './icon.svg';
 }
 
 async function render(){
@@ -77,6 +81,93 @@ async function render(){
   }
 }
 
+function closeMedicationSuggestions() {
+  const box = $('medicationSuggestions');
+  if (box) box.classList.add('hidden');
+}
+
+function renderMedicationSuggestions(items) {
+  const box = $('medicationSuggestions');
+  if (!box) return;
+
+  box.innerHTML = '';
+
+  if (!items.length) {
+    box.innerHTML = '<div class="suggestion-empty">Nenhum medicamento encontrado no catálogo. Você ainda pode digitar o nome manualmente.</div>';
+    box.classList.remove('hidden');
+    return;
+  }
+
+  for (const medication of items) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'suggestion-item';
+    button.setAttribute('role', 'option');
+
+    const name = medication.genericName || medication.name || 'Medicamento';
+    const ingredient = Array.isArray(medication.activeIngredients)
+      ? medication.activeIngredients.join(', ')
+      : (medication.activeIngredient || '');
+
+    button.innerHTML = `
+      <span class="suggestion-name">${escapeHtml(name)}</span>
+      ${ingredient ? `<span class="suggestion-meta">${escapeHtml(ingredient)}</span>` : ''}
+    `;
+
+    button.addEventListener('click', () => {
+      selectedMedication = medication;
+      $('medicationId').value = medication.id;
+      $('medName').value = name;
+      const hint = $('medicationHint');
+      if (hint) hint.textContent = 'Medicamento selecionado no catálogo.';
+      closeMedicationSuggestions();
+    });
+
+    box.appendChild(button);
+  }
+
+  box.classList.remove('hidden');
+}
+
+async function searchMedicationCatalog() {
+  const input = $('medName');
+  if (!input) return;
+
+  const term = input.value.trim();
+
+  if (term.length < 2) {
+    closeMedicationSuggestions();
+    return;
+  }
+
+  try {
+    const results = await medicationCatalog.search(term);
+    renderMedicationSuggestions(results);
+  } catch (error) {
+    console.error('Erro ao pesquisar catálogo de medicamentos:', error);
+    closeMedicationSuggestions();
+  }
+}
+
+$('medName').addEventListener('input', () => {
+  selectedMedication = null;
+  $('medicationId').value = '';
+  const hint = $('medicationHint');
+  if (hint) hint.textContent = 'Digite pelo menos 2 letras para procurar no catálogo.';
+
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(searchMedicationCatalog, 220);
+});
+
+$('medName').addEventListener('focus', () => {
+  if ($('medName').value.trim().length >= 2) searchMedicationCatalog();
+});
+
+document.addEventListener('click', (event) => {
+  const wrapper = document.querySelector('.medication-autocomplete');
+  if (wrapper && !wrapper.contains(event.target)) closeMedicationSuggestions();
+});
+
 $('googleLoginButton').onclick = async () => {
   $('loginStatus').textContent = 'Entrando...';
   try {
@@ -97,7 +188,14 @@ $('logoutButton').onclick = async () => {
 
 $('addMedicationButton').onclick = () => {
   $('medStart').value = todayISO();
+  $('medicationId').value = '';
+  $('medName').value = '';
+  selectedMedication = null;
+  closeMedicationSuggestions();
+  const hint = $('medicationHint');
+  if (hint) hint.textContent = 'Digite pelo menos 2 letras para procurar no catálogo.';
   dialog.showModal();
+  setTimeout(() => $('medName').focus(), 50);
 };
 $('closeDialog').onclick = () => dialog.close();
 $('cancelDialog').onclick = () => dialog.close();
@@ -146,7 +244,7 @@ $('fontUp').onclick = ()=>document.documentElement.style.fontSize = '20px';
 $('fontDown').onclick = ()=>document.documentElement.style.fontSize = '16px';
 $('contrastToggle').onclick = ()=>document.body.classList.toggle('high-contrast');
 
-if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(console.error);
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(console.error);
 
 onAuthStateChanged(firebaseAuth, async (user) => {
   if(!user) {

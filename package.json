@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "import:anvisa": "node scripts/import-anvisa.mjs"
   },
   "dependencies": {
     "firebase": "^12.0.0"

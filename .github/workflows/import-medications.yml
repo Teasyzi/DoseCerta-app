@@ -1,0 +1,38 @@
+name: Importar medicamentos para o Firestore
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Validação ou gravação no Firestore'
+        required: true
+        default: 'dry-run'
+        type: choice
+        options:
+          - dry-run
+          - import
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Instalar ferramenta de importação
+        run: npm install firebase-admin@13.5.0 --no-save --ignore-scripts
+      - name: Baixar base oficial de medicamentos da Anvisa
+        run: |
+          mkdir -p data/imports
+          curl -fL --retry 3 --retry-delay 2 \
+            'https://dados.anvisa.gov.br/dados/DADOS_ABERTOS_MEDICAMENTOS.csv' \
+            -o data/imports/anvisa-medicamentos.csv
+      - name: Validar/Importar
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          MEDICATION_IMPORT_FILE: data/imports/anvisa-medicamentos.csv
+          DRY_RUN: ${{ github.event.inputs.mode == 'dry-run' && 'true' || 'false' }}
+        run: npm run import:anvisa

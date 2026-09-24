@@ -1,0 +1,105 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import process from 'node:process';
+import { initializeApp, cert } from 'firebase-admin/app';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import { toMedicationRecord } from './normalize-medication.mjs';
+
+const projectRoot = path.resolve(new URL('.', import.meta.url).pathname, '..');
+const input = process.env.MEDICATION_IMPORT_FILE || path.join(projectRoot, 'data', 'medications.seed.json');
+const dryRun = process.env.DRY_RUN === 'true';
+
+function credentials() {
+  const raw = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+  if (!raw) throw new Error('FIREBASE_SERVICE_ACCOUNT_JSON não configurada.');
+  return JSON.parse(raw);
+}
+
+function parseCsv(text) {
+  const sample = text.split(/\r?\n/, 1)[0] || '';
+  const candidates = [',', ';', '\t'];
+  const separator = candidates.sort((a, b) => (sample.split(b).length - 1) - (sample.split(a).length - 1))[0];
+  const rows = [];
+  let row = [], cell = '', quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    const n = text[i + 1];
+    if (c === '"' && quoted && n === '"') { cell += '"'; i++; continue; }
+    if (c === '"') { quoted = !quoted; continue; }
+    if (c === separator && !quoted) { row.push(cell); cell = ''; continue; }
+    if ((c === '\n' || c === '\r') && !quoted) {
+      if (c === '\r' && n === '\n') i++;
+      row.push(cell); cell = '';
+      if (row.some(v => v.trim())) rows.push(row);
+      row = [];
+      continue;
+    }
+    cell += c;
+  }
+  if (cell || row.length) { row.push(cell); rows.push(row); }
+  const headers = rows.shift().map(h => h.trim());
+  return rows.map(values => Object.fromEntries(headers.map((h, i) => [h, (values[i] || '').trim()])));
+}
+
+function first(row, aliases) {
+  for (const key of aliases) if (row[key] != null && row[key] !== '') return row[key];
+  return '';
+}
+
+async function loadRows(file) {
+  const buffer = await fs.readFile(file);
+  const text = buffer.toString('latin1');
+  if (file.toLowerCase().endsWith('.json')) return JSON.parse(text);
+  return parseCsv(text);
+}
+
+function mapAnvisaRow(row) {
+  const name = first(row, ['NO_PRODUTO', 'NOME_PRODUTO', 'NOME DO PRODUTO', 'Nome do Produto']);
+  const active = first(row, ['DS_PRINCIPIO_ATIVO', 'PRINCIPIO_ATIVO', 'PRINCÍPIO ATIVO', 'Princípio Ativo']);
+  const company = first(row, ['NO_EMPRESA', 'EMPRESA', 'NOME_EMPRESA', 'Empresa']);
+  const registration = first(row, ['NU_REGISTRO', 'REGISTRO', 'NÚMERO DE REGISTRO', 'Número de registro']);
+  const status = first(row, ['DS_SITUACAO_REGISTRO', 'SITUACAO_REGISTRO', 'SITUAÇÃO DO REGISTRO', 'Situação do Registro']);
+  const presentation = first(row, ['DS_APRESENTACAO', 'APRESENTACAO', 'APRESENTAÇÃO', 'Apresentação']);
+  const form = first(row, ['DS_FORMA_FARMACEUTICA', 'FORMA_FARMACEUTICA', 'FORMA FARMACÊUTICA', 'Forma Farmacêutica']);
+  const route = first(row, ['DS_VIA_ADMINISTRACAO', 'VIA_ADMINISTRACAO', 'VIA DE ADMINISTRAÇÃO', 'Via de administração']);
+  if (!name && !active) return null;
+  const safeId = `${(name || active).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 80)}-${registration || 'sem-registro'}`;
+  return toMedicationRecord({
+    id: safeId,
+    name: name || active,
+    genericName: active || null,
+    activeIngredients: active ? [active] : [],
+    brandNames: name ? [name] : [],
+    presentations: presentation ? [{ text: presentation, form: form || null, route: route || null }] : [],
+    sources: [{ organization: 'ANVISA', type: 'medicamentos_registrados', registration: registration || null, company: company || null }],
+    reviewStatus: 'pending',
+    sourceType: 'anvisa',
+    sourceStatus: status || null
+  });
+}
+
+const rows = await loadRows(input);
+const records = input.endsWith('.csv') ? rows.map(mapAnvisaRow).filter(Boolean) : rows.map(toMedicationRecord);
+
+const dedup = new Map();
+for (const record of records) {
+  const key = `${record.normalizedName}|${record.activeIngredients.join('|')}`;
+  if (!dedup.has(key)) dedup.set(key, record);
+}
+const unique = [...dedup.values()];
+console.log(`Registros preparados: ${unique.length}`);
+if (dryRun) { console.log(JSON.stringify(unique.slice(0, 3), null, 2)); process.exit(0); }
+
+const app = initializeApp({ credential: cert(credentials()) });
+const db = getFirestore(app);
+let batch = db.batch();
+let count = 0;
+for (const record of unique) {
+  const id = record.id || record.normalizedName.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 100);
+  const ref = db.collection('medications').doc(id);
+  batch.set(ref, { ...record, importedAt: FieldValue.serverTimestamp() }, { merge: true });
+  count++;
+  if (count % 400 === 0) { await batch.commit(); batch = db.batch(); }
+}
+if (count % 400) await batch.commit();
+console.log(`Importação concluída: ${count} documentos em medications.`);

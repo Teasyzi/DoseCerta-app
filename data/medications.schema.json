@@ -1,0 +1,29 @@
+{
+  "name": "DoseCerta medication record",
+  "version": 1,
+  "fields": {
+    "name": "string",
+    "normalizedName": "string",
+    "genericName": "string|null",
+    "brandNames": "string[]",
+    "aliases": "string[]",
+    "activeIngredients": "string[]",
+    "presentations": "object[]",
+    "indications": "string[]",
+    "howItWorks": "string|null",
+    "contraindications": "string[]",
+    "warnings": "string[]",
+    "adverseEffects": "string[]",
+    "interactions": "string[]",
+    "foodInteractions": "string[]",
+    "pregnancy": "object|null",
+    "breastfeeding": "object|null",
+    "administration": "object|null",
+    "description": "string|null",
+    "sources": "object[]",
+    "reviewStatus": "pending|reviewed|published|outdated",
+    "lastReviewedAt": "timestamp|null",
+    "sourceUpdatedAt": "timestamp|null",
+    "sourceType": "anvisa|other"
+  }
+}

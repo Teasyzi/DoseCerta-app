@@ -37,7 +37,6 @@ export const medicationStore = {
     requireUser();
     const payload = {
       medicationId: data.medicationId || null,
-      medicationName: data.medicationName || data.name,
       name: data.name,
       dose: data.dose,
       time: data.time,
